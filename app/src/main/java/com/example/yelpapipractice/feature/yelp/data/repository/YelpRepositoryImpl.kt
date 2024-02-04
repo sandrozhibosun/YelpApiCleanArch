@@ -69,3 +69,40 @@ class YelpRepositoryImpl @Inject constructor(
         }
     }
 }
+
+/**  Network first cache fall back
+ *
+ *    override fun getCharactersNetworkFirst(): Flow<Resource<List<RMCharacter>>> {
+ *         return flow {
+ *             when (val resource = remoteDataSource.getCharacters()) {
+ *                 is Resource.Success -> {
+ *                     emit(Resource.Success(resource.value.results.map { it.toDomain() }))
+ *                     saveCharactersLocally(resource.value.results.map { it.toEntity() })
+ *                 }
+ *
+ *                 is Resource.Failure -> {
+ *                     emit(resource)
+ *                     emitAll(getCharactersFromLocal())
+ *                 }
+ *
+ *                 else -> Resource.Failure(false, null, "Unknown error")
+ *             }
+ *         }.flowOn(ioDispatcher)
+ *     }
+ *
+ *       private fun getCharactersFromLocal(): Flow<Resource<List<RMCharacter>>> {
+ *         return localDataSource.getCharactersLocally().map { characterEntities ->
+ *             if (characterEntities.isNotEmpty()) {
+ *                 Resource.Success(characterEntities.map { it.toDomain() })
+ *             } else {
+ *                 Resource.Failure(false, null, "No data found")
+ *             }
+ *         }
+ *     }
+ *
+ *     private suspend fun saveCharactersLocally(characterEntities: List<CharacterEntity>) {
+ *         withContext(ioDispatcher) {
+ *             localDataSource.saveCharactersLocally(characterEntities)
+ *         }
+ *     }
+ */
