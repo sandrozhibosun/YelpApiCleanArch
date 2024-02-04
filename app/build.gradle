@@ -1,0 +1,124 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    id ("kotlin-parcelize")
+    id ("androidx.navigation.safeargs.kotlin")
+}
+
+android {
+    namespace = "com.example.yelpapipractice"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.example.yelpapipractice"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    // Network
+    def okhttpVersion = "4.11.0"
+    def retrofitVersion = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
+    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttpVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
+    implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+
+    // Paging
+    implementation "androidx.paging:paging-common-ktx:3.2.1"
+    implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
+    // AndroidX
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    implementation 'com.google.android.material:material:1.11.0'
+
+    // Picasso or Glide
+//    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.5.1'
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testImplementation 'org.mockito:mockito-inline:3.7.7'
+    testImplementation 'io.mockk:mockk:1.13.4'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+    // android test
+    androidTestImplementation 'androidx.test:core:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
+//    // Data store
+//    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    // Livedata:
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    // Lifecycle scope
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+
+    def nav_version = "2.7.6"
+
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+    // Room database
+    kapt 'androidx.room:room-compiler:2.6.1'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
+    // Room testing
+    testImplementation "androidx.room:room-testing:2.6.1"
+
+    implementation 'org.slf4j:slf4j-nop:2.0.7'
+}
