@@ -1,6 +1,7 @@
 package com.example.yelpapipractice.feature.yelp.presentation.viewmodel
 
 import com.example.yelpapipractice.CoroutineTestRule
+import com.example.yelpapipractice.feature.yelp.data.model.domain.Business
 import com.example.yelpapipractice.feature.yelp.domain.usecase.GetBusinessesUseCase
 import com.example.yelpapipractice.feature.yelp.domain.usecase.RefreshBusinessUseCase
 import com.example.yelpapipractice.feature.yelp.utils.network.Resource
@@ -14,10 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
-@RunWith(JUnit4::class)
 class YelpViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
@@ -29,8 +27,9 @@ class YelpViewModelTest {
     private var getBusinessesUseCase: GetBusinessesUseCase = mockk()
     private var refreshBusinessUseCase: RefreshBusinessUseCase = mockk()
 
-    private lateinit var yelpViewModel: YelpViewModel
+    private lateinit var viewModel: YelpViewModel
 
+    // use advanced for init
 
     @Test
     fun `Given successful resource When view model initiate Then update UI state`() = runTest {
@@ -42,29 +41,29 @@ class YelpViewModelTest {
         coEvery { getBusinessesUseCase() } returns businessesFlow
 
         //When
-        yelpViewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
+        viewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
-
         //Then
-        assertTrue(yelpViewModel.uiState.value is Resource.Success)
-        assertEquals(businesses, (yelpViewModel.uiState.value as Resource.Success).value)
+        assertEquals(businesses, viewModel.uiState.value)
+        assertFalse(viewModel.isRefreshing.value)
+        assertFalse(viewModel.showError.value)
     }
 
     @Test
     fun `Given failed resource When view model initiate Then update UI state`() = runTest {
         //Given
-
         val businessesFlow = flowOf(Resource.Failure(false, null, "Error in view model"))
         coEvery { getBusinessesUseCase() } returns businessesFlow
 
         //When
-        yelpViewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
+        viewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
         testDispatcher.scheduler.advanceUntilIdle()
 
-
         //Then
-        assertTrue(yelpViewModel.uiState.value is Resource.Failure)
+        assertEquals(emptyList<Business>(), viewModel.uiState.value)
+        assertFalse(viewModel.isRefreshing.value)
+        assertTrue(viewModel.showError.value)
     }
 
     @Test
@@ -79,13 +78,14 @@ class YelpViewModelTest {
             coEvery { refreshBusinessUseCase() } returns Resource.Success(Unit)
 
             //When
-            yelpViewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
-            yelpViewModel.refreshBusinesses()
+            viewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
+            viewModel.refreshBusinesses()
             testDispatcher.scheduler.advanceUntilIdle()
 
 
             //Then
-            assertTrue(yelpViewModel.uiState.value is Resource.Success)
+            assertFalse(viewModel.isRefreshing.value)
+            assertFalse(viewModel.showError.value)
         }
 
     @Test
@@ -101,13 +101,12 @@ class YelpViewModelTest {
         )
 
         //When
-        yelpViewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
-        yelpViewModel.refreshBusinesses()
+        viewModel = YelpViewModel(getBusinessesUseCase, refreshBusinessUseCase)
+        viewModel.refreshBusinesses()
         testDispatcher.scheduler.advanceUntilIdle()
 
-
         //Then
-        assertTrue(yelpViewModel.uiState.value is Resource.Failure)
+        assertFalse(viewModel.isRefreshing.value)
+        assertTrue(viewModel.showError.value)
     }
-
 }

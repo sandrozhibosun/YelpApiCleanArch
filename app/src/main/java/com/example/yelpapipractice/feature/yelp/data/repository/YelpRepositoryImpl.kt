@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -51,6 +52,7 @@ class YelpRepositoryImpl @Inject constructor(
             try {
                 when (val resource = yelpRemoteDataSource.getBusinesses()) {
                     is Resource.Success -> {
+                        //clean option , maybe with timestamp
                         yelpLocalDataSource.cleanAndCacheBusinesses(resource.value.businessList.map { it.toEntity() })
                         Resource.Success(Unit)
                     }

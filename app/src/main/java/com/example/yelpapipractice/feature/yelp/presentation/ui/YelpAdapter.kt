@@ -13,9 +13,8 @@ import com.example.yelpapipractice.feature.yelp.data.model.domain.Business
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class YelpAdapter @Inject constructor(
-    @ActivityContext private val context: Context
-) : RecyclerView.Adapter<YelpAdapter.BusinessItemViewHolder>() {
+//change later
+class YelpAdapter @Inject constructor() : RecyclerView.Adapter<YelpAdapter.BusinessItemViewHolder>() {
 
     private var mBusinessList = emptyList<Business>()
     private lateinit var itemBusinessBinding: ItemBusinessBinding
@@ -29,16 +28,14 @@ class YelpAdapter @Inject constructor(
         notifyDataSetChanged()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun setOnItemClick(onItemClick: ((Business) -> Unit)? = null) {
         this.onItemClick = onItemClick
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessItemViewHolder {
         itemBusinessBinding =
             ItemBusinessBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return BusinessItemViewHolder(itemBusinessBinding, context)
+        return BusinessItemViewHolder(itemBusinessBinding)
     }
 
     override fun onBindViewHolder(holder: BusinessItemViewHolder, position: Int) {
@@ -50,15 +47,14 @@ class YelpAdapter @Inject constructor(
     }
 
     inner class BusinessItemViewHolder(
-        private val binding: ItemBusinessBinding,
-        private val context: Context
+        private val binding: ItemBusinessBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(business: Business, onItemClick: ((Business) -> Unit)? = null) {
             with(binding) {
                 name.text = business.name
                 description.text = business.ratings.toString()
-                Glide.with(context).load(business.imageUrl).apply(
+                Glide.with(binding.root.context).load(business.imageUrl).apply(
                     RequestOptions()
                         .placeholder(R.drawable.ic_launcher_background)
                         .error(R.drawable.ic_launcher_background)

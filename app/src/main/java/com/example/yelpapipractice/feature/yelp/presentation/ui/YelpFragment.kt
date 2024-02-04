@@ -5,14 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.yelpapipractice.databinding.FragmentYelpBinding
 import com.example.yelpapipractice.feature.yelp.presentation.viewmodel.YelpViewModel
-import com.example.yelpapipractice.feature.yelp.utils.network.Resource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -53,39 +51,34 @@ class YelpFragment : Fragment() {
     private fun setupObserver() {
         viewModel.uiState
             .flowWithLifecycle(lifecycle)
-            .onEach { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        binding.progressBar.isVisible = false
-                        binding.swipeContainer.isRefreshing =false
-                        yelpAdapter.setBusinessList(resource.value)
-                    }
+            .onEach { businesses ->
+                yelpAdapter.setBusinessList(businesses)
 
-                    is Resource.Failure -> {
-                        binding.progressBar.isVisible = false
-                        binding.swipeContainer.isRefreshing =false
-                        Snackbar.make(binding.root, resource.errorDescription?: "", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    else -> {
-                        binding.progressBar.isVisible = true
-                    }
-                }
             }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.isRefreshing.flowWithLifecycle(lifecycle).onEach { isRefreshing ->
+            binding.swipeContainer.isRefreshing = isRefreshing
+        }.launchIn(lifecycleScope)
+
+        viewModel.showError.flowWithLifecycle(lifecycle).onEach { hasError ->
+            if (hasError) {
+                Snackbar.make(binding.root, "Something went wrong", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun setupListener() {
         yelpAdapter.setOnItemClick {
 
         }
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.refreshBusinesses()
+        }
     }
 
     private fun setupRecyclerView() {
         with(binding) {
-            swipeContainer.setOnRefreshListener {
-                viewModel.refreshBusinesses()
-            }
             recyclerView.apply {
                 setHasFixedSize(true)// performance improvement
                 layoutManager = LinearLayoutManager(requireContext())

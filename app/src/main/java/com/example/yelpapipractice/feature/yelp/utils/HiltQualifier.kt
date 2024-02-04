@@ -2,6 +2,15 @@ package com.example.yelpapipractice.feature.yelp.utils
 
 import javax.inject.Qualifier
 
+//Retention(AnnotationRetention.BINARY)
+// how long will the annotation be stored
+
+// BINARY: not stored in runtime, only compiled time, not in JVM, middle lifetime
+
+// Source : only stored in source code, not in JVM, shortest lifetime
+
+// RUNTIME: stored in runtime, available in JVM, longest lifetime
+
 // used for Data transfer operations like reading/writing to database, network operations
 @Retention(AnnotationRetention.BINARY)
 @Qualifier
